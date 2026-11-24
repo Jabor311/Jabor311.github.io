@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mein Schmerzkalender</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f5f9;--sf:#fff;--tx:#1d2733;--mu:#667386;--ln:#d5dbe5;--ac:#2a6288;--ac2:#e3e8f0;--hd:#8d9cb8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a22;--sf:#1d2631;--tx:#e6ebf2;--mu:#98a5b8;--ln:#33404f;--ac:#6fb0dc;--ac2:#27323f;--hd:#4b5b73}}
+:root[data-theme="dark"]{--bg:#141a22;--sf:#1d2631;--tx:#e6ebf2;--mu:#98a5b8;--ln:#33404f;--ac:#6fb0dc;--ac2:#27323f;--hd:#4b5b73}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 "Source Serif 4",Georgia,"Times New Roman",serif}
+h1,h2,h3,button,input,select,textarea,.tabs,th,.k{font-family:"Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}
+header{padding:18px 16px 0;max-width:1100px;margin:auto}
+h1{font-size:26px;margin:0;font-weight:600;letter-spacing:-.01em}
+.sub{color:var(--mu);margin:2px 0 12px}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--ln);overflow-x:auto}
+.tabs button{background:none;border:0;padding:10px 16px;font-size:15px;color:var(--mu);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tabs button[aria-selected=true]{color:var(--ac);border-color:var(--ac);font-weight:600}
+main{max-width:1100px;margin:auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:14px;margin-bottom:14px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+button.b,input,select,textarea{font-size:14px;border:1px solid var(--ln);background:var(--sf);color:var(--tx);border-radius:5px;padding:7px 10px}
+button.b{cursor:pointer}button.p{background:var(--ac);color:#fff;border-color:var(--ac)}
+button.b:focus-visible,input:focus-visible,textarea:focus-visible,td:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.date{font-size:18px;font-weight:600;flex:1;min-width:200px}
+.sc{overflow-x:auto;padding-bottom:6px}
+table.g{border-collapse:collapse;user-select:none;touch-action:pan-x pan-y}
+table.g th{font-size:11px;font-weight:600;background:var(--ac2);color:var(--ac);padding:3px 0;min-width:27px}
+table.g th.l{text-align:right;padding:3px 8px;min-width:112px;white-space:nowrap;color:var(--tx);font-weight:500}
+table.g td{height:26px;min-width:27px;border:1px dashed var(--ln);cursor:pointer;text-align:center;font-size:9px;color:#fff;padding:0}
+table.g tr:nth-child(even) td{background-image:linear-gradient(var(--ac2),var(--ac2));background-blend-mode:normal}
+table.g td.on{border-style:solid}
+table.g td.o2{background:var(--ac)!important;font-weight:700}
+tr.gap td,tr.gap th{height:10px;border:0;background:none!important;cursor:default}
+.leg{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0;font-size:13px;color:var(--mu)}
+.dot{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.row{display:flex;gap:12px;flex-wrap:wrap}.row>label{flex:1;min-width:210px;font-size:13px;color:var(--mu);display:flex;flex-direction:column;gap:3px}
+textarea{width:100%;min-height:70px;font-family:inherit}
+.hist{display:grid;grid-template-columns:150px 1fr 120px auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--ln);cursor:pointer}
+.hist:hover{background:var(--ac2)}
+.spark{display:flex;gap:1px}.spark i{flex:1;height:18px;background:var(--ac2);border-radius:1px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.k{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:12px}.k b{display:block;font-size:26px;color:var(--ac)}.k span{font-size:13px;color:var(--mu)}
+table.t{width:100%;border-collapse:collapse;font-size:14px}table.t th,table.t td{padding:6px 8px;border-bottom:1px solid var(--ln);text-align:left}
+.good{color:#2f8f4e;font-weight:600}.bad{color:#c0392b;font-weight:600}
+.mu{color:var(--mu);font-size:13px}.warn{background:#fff3cd;color:#664d03;padding:8px 12px;border-radius:5px;font-size:13px;margin-bottom:12px;display:none}
+.hint{font-size:13px;color:var(--mu)}
+table.g th.l{position:sticky;left:0;z-index:2}
+html{-webkit-text-size-adjust:100%}
+#pm{position:fixed;z-index:50;background:var(--sf);border:1px solid var(--ln);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.28);padding:6px;min-width:200px;font-family:"Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}
+#pm button{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;background:none;border:0;border-radius:5px;color:var(--tx);font-size:16px;text-align:left;padding:0 10px;cursor:pointer}
+#pm button:hover,#pm button.cur{background:var(--ac2)}#pm button.cur{font-weight:600}
+#pm .mt{font-size:12px;color:var(--mu);padding:4px 10px}
+#pm .dot{width:16px;height:16px;margin:0}
+#pm .tx{padding:6px 10px 10px;font-size:16px;max-width:min(300px,80vw);overflow-wrap:anywhere;white-space:pre-wrap}
+#pm input{width:100%;min-width:230px;font-size:16px}
+#pm .pb{display:flex;gap:6px;padding:0 4px 4px}
+#pm .pb button{justify-content:center;border:1px solid var(--ln)}
+#pm .pb button[data-s]{background:var(--ac);color:#fff;border-color:var(--ac)}
+#pm button[data-x]{background:#c0392b;color:#fff;border:1px solid #c0392b;margin-top:4px}
+#pm button[data-x]:hover{background:#a5301f;border-color:#a5301f}
+#pm .pb button[data-x]{margin-top:0}
+#pm button[data-x]::before{content:"";width:16px;height:16px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v7M14 10v7'/%3E%3C/svg%3E") center/contain no-repeat}
+button,td,.hist{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.sc{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+@media(max-width:640px){
+main{padding:8px 6px}header{padding:14px 12px 0}h1{font-size:22px}
+input,select,textarea{font-size:16px}
+button.b{padding:10px 14px}
+.tabs button{padding:12px 14px}
+.card{padding:8px}
+.bar{gap:6px}.date{order:-1;flex-basis:100%;font-size:17px}
+#prev,#next{flex:1}#dp{flex:2}
+table.g td,table.g th{min-width:34px}table.g td{height:34px}
+table.g th.l{min-width:0;width:68px;font-size:10.5px;line-height:1.15;padding:3px 5px;white-space:normal;text-align:left}
+.row>label{min-width:100%}
+.hist{grid-template-columns:1fr auto}.hist .spark,.hist .mu{grid-column:1/-1}
+table.t{font-size:13px}table.t th,table.t td{padding:6px 4px}
+.grid4{grid-template-columns:1fr 1fr}
+}
+</style></head><body>
+<header><h1>Mein Schmerzkalender</h1><p class="sub">Migräne dokumentieren, Verläufe erkennen, Daten mitnehmen</p>
+<nav class="tabs" role="tablist"><button role="tab" data-t="cal" aria-selected="true">Kalender</button><button role="tab" data-t="his" aria-selected="false">Historie</button><button role="tab" data-t="ana" aria-selected="false">Auswertung</button><button role="tab" data-t="dat" aria-selected="false">Import / Export</button></nav></header>
+<main>
+<div class="warn" id="warn">Speichern im Browser ist nicht verfügbar. Bitte exportieren Sie Ihre Daten regelmäßig unter „Import / Export“.</div>
+
+<section id="cal" class="on">
+ <div class="bar"><button class="b" id="prev" aria-label="Vortag">‹</button><div class="date" id="dl"></div><button class="b" id="next" aria-label="Folgetag">›</button><input type="date" id="dp"><button class="b" id="today">Heute</button></div>
+ <div class="card"><div class="sc" id="grid"></div>
+ <div class="leg" id="leg"></div>
+ <div class="row"><label>Medikament für die nächste Markierung<input id="mname" list="ml" placeholder="z. B. Ibuprofen 400 mg"></label><label>Andere Maßnahme für die nächste Markierung<input id="oname" list="ol" placeholder="z. B. Ruhe, Kälte, Spaziergang"></label></div>
+ <datalist id="ml"></datalist><datalist id="ol"></datalist>
+ <p class="hint">Schmerzstärke: Feld anklicken oder antippen und im Menü die Stärke wählen. Doppelklick oder doppeltes Antippen entfernt einen Eintrag (auch bei Schlaf, Medikation und Maßnahmen). Auf dem Handy können Sie den Kalender seitlich wischen, ohne etwas einzutragen. Die Spalten laufen wie im Papierkalender von 6 Uhr bis 5 Uhr des Folgetags.</p></div>
+ <div class="card"><label class="hint" for="note">Notizen zum Tag (Auslöser, Aura, Besonderheiten)</label><textarea id="note"></textarea></div>
+</section>
+
+<section id="his"><div class="card" id="hl"></div></section>
+
+<section id="ana">
+ <div class="grid4" id="sum"></div>
+ <div class="card"><h3>Verlauf der letzten 30 Tage</h3><div class="sc" id="chart"></div><div class="mu">Hell: stärkster Schmerz des Tages · Dunkel: durchschnittlicher Schmerz</div></div>
+ <div class="card"><h3>Medikamente: Schmerz vorher und nachher</h3><div id="am"></div></div>
+ <div class="card"><h3>Andere Maßnahmen: Schmerz vorher und nachher</h3><div id="ao"></div></div>
+ <div class="card"><h3>Schlaf und Schmerz am Folgetag</h3><div id="as"></div></div>
+ <div class="card"><h3>Auffällig lange Schmerzphasen</h3>
+  <div class="bar mu">Phase ab Stärke <select id="pl"><option value="2">schwach</option><option value="3" selected>mittel</option><option value="4">stark</option><option value="5">sehr stark</option></select> und mindestens <input type="number" id="pn" value="6" min="2" max="48" style="width:70px"> Stunden</div><div id="ap"></div></div>
+</section>
+
+<section id="dat">
+ <div class="card"><h3>Exportieren</h3><p class="hint">Enthält alle erfassten Tage und die aktuelle Auswertung (JSON). Kopieren Sie den Text und speichern Sie ihn in einer Datei, z. B. in Ihren Notizen oder per E-Mail an sich selbst.</p>
+ <div class="bar"><button class="b p" id="ex">Export erstellen</button><button class="b" id="cp">In Zwischenablage kopieren</button></div><textarea id="xo" style="min-height:120px" readonly></textarea></div>
+ <div class="card"><h3>Importieren</h3><p class="hint">Datei wählen oder exportierten Text einfügen. Die Auswertung wird aus den importierten Tagen neu berechnet.</p>
+ <div class="bar"><input type="file" id="fi" accept=".json,.txt,application/json"></div><textarea id="xi" placeholder="Exportierten JSON-Text hier einfügen"></textarea>
+ <div class="bar" style="margin-top:8px"><select id="im"><option value="merge">Mit vorhandenen Daten zusammenführen</option><option value="replace">Vorhandene Daten ersetzen</option></select><button class="b p" id="doim">Importieren</button><span id="ims" class="mu"></span></div></div>
+ <div class="card"><h3>Weitere Optionen</h3><div class="bar"><button class="b" id="demo">Beispieldaten laden</button><button class="b" id="clr">Alle Daten löschen</button></div><p class="hint" id="cf"></p><p class="hint" id="ps"></p></div>
+</section>
+</main>
+<script>
+const H=[6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,1,2,3,4,5];
+const LV=['kein Schmerz','sehr schwach','schwach','mittel','stark','sehr stark'];
+const C=['#4fa56a','#b4c957','#e8c24a','#f0953c','#e05a3a','#a81c2e'];
+const KEY='schmerzkalender-v1';
+const $=s=>document.querySelector(s);
+let S={days:{}},cur=iso(new Date()),painting=false,mode=null,memOnly=false;
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function pd(s){const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)}
+function addD(s,n){const d=pd(s);d.setDate(d.getDate()+n);return iso(d)}
+function fd(s,o){return pd(s).toLocaleDateString('de-DE',o||{day:'2-digit',month:'2-digit',year:'numeric'})}
+function fm(n){return n==null?'–':n.toFixed(1).replace('.',',')}
+function avg(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:null}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.days)S=o}}catch(e){memOnly=true;$('#warn').style.display='block'}}
+function save(){for(const k in S.days){const d=S.days[k];if(!Object.keys(d.p).length&&!Object.keys(d.s).length&&!Object.keys(d.m).length&&!Object.keys(d.o).length&&!d.n)delete S.days[k]}
+ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){memOnly=true;$('#warn').style.display='block'}}
+function ens(k){return S.days[k]||(S.days[k]={p:{},s:{},m:{},o:{},n:''})}
+function norm(d){return{p:d.p||{},s:d.s||{},m:d.m||{},o:d.o||{},n:d.n||''}}
+
+/* Kalender */
+function grid(){const d=S.days[cur]||norm({});
+ let h='<table class="g" id="gt"><tr><th class="l">Uhrzeit</th>'+H.map(x=>'<th>'+x+'</th>').join('')+'</tr>';
+ for(let l=5;l>=0;l--){h+='<tr><th class="l">'+LV[l]+'</th>'+H.map((_,i)=>d.p[i]===l?`<td data-t="p" data-l="${l}" data-i="${i}" class="on" style="background:${C[l]}"></td>`:`<td data-t="p" data-l="${l}" data-i="${i}"></td>`).join('')+'</tr>'}
+ h+='<tr class="gap"><th></th><td colspan="24"></td></tr>';
+ [['s','Schlaf'],['m','Medikation'],['o','Andere Maßnahmen']].forEach(([t,n])=>{
+  h+='<tr><th class="l">'+n+'</th>'+H.map((_,i)=>{const v=d[t][i];return v!==undefined?`<td data-t="${t}" data-i="${i}" class="on o2" title="${t=='s'?'Schlaf':esc(v)}">${t=='s'?'':esc(v).slice(0,3)}</td>`:`<td data-t="${t}" data-i="${i}"></td>`}).join('')+'</tr>'});
+ $('#grid').innerHTML=h+'</table>';
+ const names=t=>[...new Set(Object.values(S.days).flatMap(x=>Object.values(x[t])))].sort();
+ $('#ml').innerHTML=names('m').map(n=>`<option value="${esc(n)}">`).join('');$('#ol').innerHTML=names('o').map(n=>`<option value="${esc(n)}">`).join('')}
+function head(){$('#dl').textContent=fd(cur,{weekday:'long',day:'numeric',month:'long',year:'numeric'});$('#dp').value=cur;$('#note').value=(S.days[cur]||{}).n||'';grid()}
+function apply(td,first){const t=td.dataset.t,i=+td.dataset.i,d=ens(cur);
+ if(t=='p'){const l=+td.dataset.l;if(first)mode=d.p[i]===l?'clr':'set';if(mode=='set')d.p[i]=l;else if(d.p[i]===l)delete d.p[i]}
+ else{if(first)mode=d[t][i]!==undefined?'clr':'set';if(mode=='set')d[t][i]=t=='s'?1:($('#'+t+'name').value.trim()||(t=='m'?'Medikament':'Maßnahme'));else delete d[t][i]}
+ save();grid()}
+let mouseDown=false;
+
+/* Touch: nur ein echtes Antippen (click) setzt einen Eintrag, Wischen scrollt */
+let lastTap={k:'',t:0};
+function setV(t,i,l){const d=ens(cur);if(t=='p')d.p[i]=l;else d[t][i]=t=='s'?1:($('#'+t+'name').value.trim()||(t=='m'?'Medikament':'Maßnahme'));save();grid()}
+function delV(t,i){const d=S.days[cur];if(!d)return;delete d[t][i];save();grid()}
+function closeMenu(){const m=$('#pm');if(m)m.remove()}
+function openInfo(td,t,i){closeMenu();const v=(S.days[cur]||{})[t]?.[i];if(v===undefined)return;const m=document.createElement('div');m.id='pm';m.setAttribute('role','dialog');
+ m.innerHTML='<div class="mt">'+(t=='m'?'Medikation':'Andere Maßnahme')+', '+H[i]+' Uhr</div><div class="tx"><input id="pmi" maxlength="120" aria-label="Eintrag bearbeiten" list="'+(t=='m'?'ml':'ol')+'" value="'+esc(v)+'"></div><div class="pb"><button type="button" data-s="1">Speichern</button><button type="button" data-x="1">Entfernen</button></div><div class="mt">Doppelt tippen im Feld entfernt den Eintrag</div>';
+ document.body.appendChild(m);const r=td.getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight;
+ let x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8),y=r.bottom+6;if(y+h>innerHeight-8)y=Math.max(8,r.top-h-6);
+ m.style.left=x+'px';m.style.top=y+'px';
+ const inp=m.querySelector('#pmi'),sv=()=>{const nv=inp.value.trim();if(nv){ens(cur)[t][i]=nv;save();grid()}closeMenu()};
+ m.onclick=e=>{if(e.target.closest('button[data-x]')){delV(t,i);closeMenu()}else if(e.target.closest('button[data-s]'))sv()};
+ inp.onkeydown=e=>{if(e.key==='Enter')sv()};
+ if(matchMedia('(pointer:fine)').matches){inp.focus();inp.select()}}
+function openMenu(td){closeMenu();const i=+td.dataset.i,cv=(S.days[cur]||{p:{}}).p[i],m=document.createElement('div');m.id='pm';m.setAttribute('role','menu');
+ m.innerHTML='<div class="mt">'+H[i]+' Uhr: Schmerzstärke</div>'+[5,4,3,2,1,0].map(l=>`<button type="button" role="menuitem" data-l="${l}"${cv===l?' class="cur"':''}><i class="dot" style="background:${C[l]}"></i>${LV[l]}</button>`).join('')+(cv!==undefined?'<button type="button" role="menuitem" data-x="1">Eintrag entfernen</button>':'')+'<div class="mt">Doppelt tippen im Feld entfernt den Eintrag</div>';
+ document.body.appendChild(m);const r=td.getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight;
+ let x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8),y=r.bottom+6;if(y+h>innerHeight-8)y=Math.max(8,r.top-h-6);
+ m.style.left=x+'px';m.style.top=y+'px';
+ m.onclick=e=>{const b=e.target.closest('button[data-l]');if(b){setV('p',i,+b.dataset.l);closeMenu()}else if(e.target.closest('button[data-x]')){delV('p',i);closeMenu()}}}
+$('#grid').addEventListener('click',e=>{const td=e.target.closest('td[data-t]');if(!td)return;const t=td.dataset.t,i=+td.dataset.i,k=t+i,now=Date.now();
+ if(lastTap.k===k&&now-lastTap.t<400){lastTap={k:'',t:0};closeMenu();delV(t,i);return}
+ lastTap={k,t:now};if(t=='p')openMenu(td);else if(t!='s'&&(S.days[cur]||{})[t]?.[i]!==undefined)openInfo(td,t,i);else setV(t,i)});
+document.addEventListener('scroll',()=>{const m=$('#pm');if(m&&m.contains(document.activeElement))return;closeMenu()},true);
+document.addEventListener('click',e=>{if(!e.target.closest('#pm')&&!e.target.closest('#grid'))closeMenu()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
+
+
+$('#note').oninput=e=>{ens(cur).n=e.target.value;save()};
+$('#prev').onclick=()=>{cur=addD(cur,-1);head()};$('#next').onclick=()=>{cur=addD(cur,1);head()};
+$('#today').onclick=()=>{cur=iso(new Date());head()};$('#dp').onchange=e=>{if(e.target.value){cur=e.target.value;head()}};
+$('#leg').innerHTML=LV.map((n,i)=>`<span><i class="dot" style="background:${C[i]}"></i>${n}</span>`).join('');
+
+/* Historie */
+function st(d){const v=Object.values(d.p);return{n:v.length,max:v.length?Math.max(...v):null,avg:avg(v),h:v.filter(x=>x>=1).length}}
+function hist(){const ks=Object.keys(S.days).sort().reverse();
+ $('#hl').innerHTML=ks.length?'<h3>Erfasste Tage ('+ks.length+')</h3>'+ks.map(k=>{const d=S.days[k],s=st(d),ms=[...new Set([...Object.values(d.m),...Object.values(d.o)])];
+  return `<div class="hist" data-k="${k}" tabindex="0"><b>${fd(k,{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'})}</b><div class="spark">${H.map((_,i)=>`<i style="${d.p[i]!==undefined?'background:'+C[d.p[i]]:''}"></i>`).join('')}</div><span class="mu">${s.n?'max. '+LV[s.max]+', Ø '+fm(s.avg):'ohne Schmerzwerte'}</span><button class="b" data-del="${k}" aria-label="Tag löschen">Löschen</button><span class="mu" style="grid-column:1/-1">${ms.length?esc(ms.join(', ')):''}${d.n?' · Notiz: '+esc(d.n.slice(0,80)):''}</span></div>`}).join(''):'<p>Noch keine Einträge. Tragen Sie im Kalender Ihren ersten Tag ein oder laden Sie Beispieldaten unter „Import / Export“.</p>'}
+$('#hl').onclick=e=>{const dl=e.target.closest('[data-del]');if(dl){if(confirm('Diesen Tag löschen?')){delete S.days[dl.dataset.del];save();hist()}return}
+ const r=e.target.closest('.hist');if(r){cur=r.dataset.k;tab('cal')}};
+
+/* Auswertung */
+function effect(t){const g={};for(const k in S.days){const d=S.days[k];for(const i0 in d[t]){const i=+i0,nm=d[t][i0];
+  const b=[i-1,i].map(x=>d.p[x]).filter(x=>x!==undefined),a=[i+2,i+3].map(x=>d.p[x]).filter(x=>x!==undefined);
+  if(b.length&&a.length){(g[nm]=g[nm]||{n:0,b:[],a:[]});g[nm].n++;g[nm].b.push(avg(b));g[nm].a.push(avg(a))}}}
+ return Object.entries(g).map(([n,v])=>({name:n,n:v.n,before:avg(v.b),after:avg(v.a),delta:avg(v.a)-avg(v.b)})).sort((x,y)=>x.delta-y.delta)}
+function sleepEff(){const A=[],B=[];for(const k in S.days){const sl=Object.keys(S.days[k].s).length,nx=S.days[addD(k,1)];if(!sl||!nx)continue;const a=avg(Object.values(nx.p));if(a==null)continue;(sl>=7?A:B).push(a)}
+ return{ge7:{n:A.length,avg:avg(A)},lt7:{n:B.length,avg:avg(B)}}}
+function phases(lv,len){const ks=Object.keys(S.days).sort(),out=[];let run=null;
+ const end=()=>{if(run&&run.len>=len)out.push(run);run=null};let prev=null;
+ for(const k of ks){if(prev&&addD(prev,1)!==k)end();prev=k;
+  for(let i=0;i<24;i++){const v=S.days[k].p[i];
+   if(v!==undefined&&v>=lv){if(!run)run={date:k,slot:i,len:0,max:0};run.len++;run.max=Math.max(run.max,v)}else end()}}
+ end();return out.sort((a,b)=>b.len-a.len)}
+function analysis(){const ks=Object.keys(S.days).sort(),ds=ks.map(k=>({k,s:st(S.days[k])})).filter(x=>x.s.n);
+ const lv=+$('#pl').value,ln=+$('#pn').value||6;
+ return{tageMitSchmerzwerten:ds.length,schmerzfreieTage:ds.filter(x=>x.s.max===0).map(x=>x.k),tageMitStarkemSchmerz:ds.filter(x=>x.s.max>=4).map(x=>x.k),
+ durchschnittSchmerz:avg(ds.map(x=>x.s.avg)),medikamente:effect('m'),maßnahmen:effect('o'),schlaf:sleepEff(),
+ langePhasen:phases(lv,ln).map(p=>({datum:p.date,start:H[p.slot]+':00',stunden:p.len,maxStufe:LV[p.max]})),phasenKriterium:{minStufe:LV[lv],minStunden:ln}}}
+function etab(a,unit){return a.length?'<table class="t"><tr><th>Name</th><th>Einnahmen</th><th>Schmerz vorher</th><th>nach 2–3 Std.</th><th>Veränderung</th></tr>'+a.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.n}</td><td>${fm(r.before)}</td><td>${fm(r.after)}</td><td class="${r.delta<-.2?'good':r.delta>.2?'bad':''}">${(r.delta>0?'+':'')+fm(r.delta)}</td></tr>`).join('')+'</table><p class="mu">Skala 0 (kein Schmerz) bis 5 (sehr stark). Vergleich: Mittelwert der Stunde vor/während der Markierung mit der Stunde 2 und 3 Stunden danach. Nur Einträge mit Schmerzwerten davor und danach zählen. Das zeigt Zusammenhänge im Verlauf, keinen Nachweis einer Wirkung.</p>':'<p class="mu">Noch keine auswertbaren Einträge: Markieren Sie '+unit+' und tragen Sie Schmerzwerte davor und danach ein.</p>'}
+function ana(){const a=analysis(),ks=Object.keys(S.days).length;
+ $('#sum').innerHTML=[[ks,'Tage erfasst'],[a.schmerzfreieTage.length,'schmerzfreie Tage'],[a.tageMitStarkemSchmerz.length,'Tage mit starkem Schmerz'],[fm(a.durchschnittSchmerz),'Ø Schmerzstufe (0–5)']].map(x=>`<div class="k"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('');
+ $('#am').innerHTML=etab(a.medikamente,'Medikamente');$('#ao').innerHTML=etab(a.maßnahmen,'Maßnahmen');
+ const s=a.schlaf;$('#as').innerHTML=(s.ge7.n||s.lt7.n)?`<table class="t"><tr><th>Schlaf in der Nacht</th><th>Tage</th><th>Ø Schmerz am Folgetag</th></tr><tr><td>7 Std. oder mehr</td><td>${s.ge7.n}</td><td>${fm(s.ge7.avg)}</td></tr><tr><td>weniger als 7 Std.</td><td>${s.lt7.n}</td><td>${fm(s.lt7.avg)}</td></tr></table>`:'<p class="mu">Noch keine Daten: Schlafstunden an einem Tag und Schmerzwerte am Folgetag werden benötigt.</p>';
+ const ph=a.langePhasen;$('#ap').innerHTML=ph.length?'<table class="t"><tr><th>Beginn</th><th>Dauer</th><th>Höchste Stufe</th></tr>'+ph.map(p=>`<tr><td>${fd(p.datum)} ab ${p.start} Uhr</td><td class="${p.stunden>=12?'bad':''}">${p.stunden} Std.</td><td>${p.maxStufe}</td></tr>`).join('')+'</table>':'<p class="mu">Keine Phasen mit diesen Kriterien.</p>';
+ let w=640,hh=150,n=30,bw=w/n,sv=`<svg viewBox="0 0 ${w} ${hh}" style="min-width:560px;width:100%" role="img" aria-label="Schmerzverlauf 30 Tage">`;
+ for(let l=0;l<=5;l++){const y=120-l*22;sv+=`<line x1="0" x2="${w}" y1="${y}" y2="${y}" stroke="var(--ln)" stroke-dasharray="3 3"/>`}
+ for(let j=0;j<n;j++){const k=addD(iso(new Date()),j-n+1),d=S.days[k],s=d?st(d):null;
+  if(s&&s.n){sv+=`<rect x="${j*bw+2}" y="${120-s.max*22}" width="${bw-4}" height="${s.max*22||2}" fill="${C[s.max]}" opacity=".45"><title>${fd(k)}: max. ${LV[s.max]}</title></rect><rect x="${j*bw+6}" y="${120-s.avg*22}" width="${bw-12}" height="${s.avg*22||1}" fill="${C[Math.round(s.avg)]}"/>`}
+  if(j%5==0)sv+=`<text x="${j*bw+2}" y="140" font-size="10" fill="var(--mu)">${fd(k,{day:'2-digit',month:'2-digit'})}</text>`}
+ $('#chart').innerHTML=sv+'</svg>'}
+$('#pl').onchange=$('#pn').oninput=ana;
+
+/* Import / Export */
+function exp(){return JSON.stringify({format:'schmerzkalender',version:1,exportiert:new Date().toISOString(),days:S.days,auswertung:analysis()},null,1)}
+$('#ex').onclick=()=>{$('#xo').value=exp()};
+$('#cp').onclick=async()=>{$('#xo').value=exp();try{await navigator.clipboard.writeText($('#xo').value);$('#cp').textContent='Kopiert'}catch(e){$('#xo').select();$('#cp').textContent='Bitte manuell kopieren (Strg+C)'}setTimeout(()=>$('#cp').textContent='In Zwischenablage kopieren',2500)};
+function imp(txt){const m=$('#ims');try{const o=JSON.parse(txt),src=o.days||o,add={};let c=0;
+  for(const k in src){if(/^\d{4}-\d\d-\d\d$/.test(k)&&src[k]&&typeof src[k]=='object'){add[k]=norm(src[k]);c++}}
+  if(!c)throw 0;if($('#im').value=='replace')S.days={};Object.assign(S.days,add);save();m.textContent=c+' Tage importiert.';head();hist()}
+ catch(e){m.textContent='Import nicht möglich: Das Format wurde nicht erkannt.'}}
+$('#doim').onclick=()=>imp($('#xi').value);
+$('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('#xi').value=r.result;imp(r.result)};r.readAsText(f)};
+$('#clr').onclick=()=>{if(confirm('Wirklich alle Daten löschen?')){S={days:{}};save();head();hist()}};
+$('#demo').onclick=()=>{let r=7;const rnd=()=>(r=(r*9301+49297)%233280)/233280;
+ for(let j=60;j>0;j--){const k=addD(iso(new Date()),-j),d=norm({});
+  if(rnd()<.35){const st0=Math.floor(rnd()*10),len=3+Math.floor(rnd()*(rnd()<.2?12:6)),pk=3+Math.floor(rnd()*3),med=rnd()<.7?'Ibuprofen 400 mg':'',oth=rnd()<.5?'Ruhe im dunklen Raum':'';
+   for(let i=0;i<24;i++){if(i<st0)d.p[i]=0;else if(i<st0+len){const x=i-st0;d.p[i]=Math.max(1,Math.min(5,x<2?Math.round(pk*(x+1)/3):(med&&x>=3?Math.max(1,pk-2):pk)))}else d.p[i]=i<st0+len+2?1:0}
+   if(med)d.m[st0+1]=med;if(oth)d.o[st0+2]=oth}
+  else for(let i=0;i<24;i++)d.p[i]=rnd()<.15?1:0;
+  const sh=4+Math.floor(rnd()*5);for(let i=24-sh;i<24;i++)d.s[i]=1;S.days[k]=d}
+ save();head();hist();$('#cf').textContent='60 Tage Beispieldaten geladen (zusätzlich zu Ihren Einträgen, ältere Beispielwerte werden überschrieben).'};
+
+/* Tabs */
+function tab(t){document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t==t));
+ document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id==t));if(t=='cal')head();if(t=='his')hist();if(t=='ana')ana()}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+async function persist(){const p=$('#ps');try{if(!navigator.storage||!navigator.storage.persist){p.textContent='Dauerhafter Speicher: wird von diesem Browser nicht unterstützt. Bitte regelmäßig exportieren.';return}
+ const ok=(await navigator.storage.persisted())||(await navigator.storage.persist());
+ p.textContent=ok?'Dauerhafter Speicher: vom Browser zugesagt.':'Dauerhafter Speicher: vom Browser nicht zugesagt. Bitte regelmäßig exportieren.'}catch(e){p.textContent='Dauerhafter Speicher: Status nicht ermittelbar. Bitte regelmäßig exportieren.'}}
+load();head();persist();addEventListener('pointerdown',persist,{once:true});
+</script></body></html>
